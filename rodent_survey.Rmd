@@ -1,0 +1,520 @@
+---
+title: "Analyzing an ecology survey"
+output:
+  pdf_document: default
+  html_notebook: default
+  html_document: default
+---
+
+# Introduction
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook.
+
+You know the drill now, but you can add a new chunk by clicking the *Insert
+Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+In this Notebook, we will ask you to "show" some values.  For example, imagine
+you had already set a variable `a` to have the value 10:
+
+```{r}
+# Set a to have the value 10
+a <- 10
+```
+
+To "show"" the value, you put the variable on a line on its own, like this:
+
+```{r}
+a
+```
+
+When you execute the chunk, the value appears after the chunk.
+
+
+## Getting the survey data
+
+This notebook analyzes some animal survey data.
+
+The data is a processed version of a file from an Ecology data paper [Long-term
+monitoring and experimental manipulation of a Chihuahuan Desert ecosystem near
+Portal, Arizona, USA](http://esapubs.org/archive/ecol/E090/118).
+
+I took a version of these data from a [short R
+course](https://datacarpentry.org/R-ecology-lesson) by
+<https://datacarpentry.org>, and processed the data further to select a subset
+of the species from the original survey.  If you want to see what I did, have a
+look at [the notebook I used to do the
+processing](https://github.com/matthew-brett/biosciences-intro/blob/master/prepare_rodents.Rmd).
+
+Run the chunk below to load my version of the data file.  If you unpacked the
+exercise `.zip` file correctly, the file should be in the same directory as the
+notebook.  If you get an error of form `cannot open the connection`, make sure
+that the data file is in the same directory as the notebook.  If it is not,
+check you are working on a copy of the notebook that you have unpacked from the
+zip file and not the version opened directly from inside the zip file.  Please
+ask for help quickly if you cannot solve the problem.
+
+```{r}
+# Load the data file as a data frame.
+surveys <- read.csv("rodent_survey_18p2.csv")
+# Show the first six rows
+head(surveys)
+```
+
+After executing the chunk above, you should have a new variable called
+`surveys`, of type ("class") *data frame*.
+
+```{r}
+# Run this chunk.
+class(surveys)
+```
+
+
+## What's in the data frame?
+
+Each row of the data frame corresponds to one rodent captured and measured for
+the survey.  Each column corresponds to a different classification or
+measurement for each animal.
+
+Show the column names of the data frames with the following chunk:
+
+```{r}
+# Show the names of the columns
+names(surveys)
+```
+
+
+Your chunk above should show the names in the first column of the table below.
+The table also gives a description of what each variable means.
+
+| Column             | Description                        |
+|--------------------|------------------------------------|
+| `record_id`        | Unique id for the observation      |
+| `month`            | month of observation               |
+| `day`              | day of observation                 |
+| `year`             | year of observation                |
+| `plot_id`          | ID of a particular plot            |
+| `species_id`       | 2 letter code identifying species  |
+| `sex`              | sex of animal ("M", "F")           |
+| `hindfoot_length`  | length of the hindfoot in mm       |
+| `weight`           | weight of the animal in grams      |
+| `genus`            | genus of animal                    |
+| `species`          | species of animal                  |
+| `taxon`            | e.g. Rodent, Reptile, Bird, Rabbit |
+| `plot_type`        | type of plot                       |
+
+
+`plot_type` gives the type of the plot in which the animals were measured.
+There were various types of plot, including control plots, with no restriction
+on the rodents that could enter, and other plots, such as `krat exclosure`
+plots, that excluded a particular type of rat. The "krat exclosure" kept out the
+[banner-tailed kangaroo
+rat](https://en.wikipedia.org/wiki/Banner-tailed_kangaroo_rat).
+
+The different plot types provide different environments.  For example, as you
+will soon find, the banner-tailed kangaroo rats are particularly large.
+Excluding these rats will change the competitive environment for other rats, and
+this may change aspects of their health, such as their weight.
+
+We will work up to an investigation of this question in the notebook.
+
+Now your turn. Show the number of rows (animals) and columns (variables), using
+the `dim` command:
+
+```{r}
+#- Use "dim" to show the number of rows, columns of the "surveys" data frame.
+#- 4 marks / 100 (total 4 so far).
+dim(...)
+```
+
+
+## Weight
+
+We are interested to work out how the weight of the animals varies by various
+factors, including species, sex and plot type.
+
+Start by investigating the `weight` column of the data frame.  Use the
+`summary` function to give a numerical summary of the values in the `weight`
+column.  We just want a summary for the `weight` column, not the whole data
+frame.
+
+```{r}
+#- Use "summary" to show a summary of the "weight" column of the data frame.
+#- 4 marks / 100 (total 8 so far).
+...
+```
+
+The summary gives us some idea of the distribution, but a histogram is even
+better.   Plot a histogram of the `weight` column data.
+
+```{r}
+#- Plot a histogram of the values in the "weight" column.
+#- 5 marks / 100 (total 13 so far).
+...
+```
+
+The histogram does not look like a normal distribution.  It looks as though
+there are different subgroups in these animals.  If we want to understand the
+weight values, we need to see what these subgroups are.
+
+
+## The difference between rodents
+
+Your eye falls on the `species_id` column in the data frame.  This is a
+two-letter code for the species of the animal.  What species do we have in this
+dataset?
+
+Use the `table` function to display a table of the counts for each value of
+`species_id`:
+
+```{r}
+#- Use "table" to show the counts for each value of "species_id"
+#- 5 marks / 100 (total 18 so far).
+...
+```
+
+The different species will likely have very different weight distributions.
+
+To investigate, we can start with a box plot.
+
+We want a figure with a different box plot for every species, so we can see the
+difference in the weight distributions.
+
+Do to this we want a box plot of `weight` *as a function of* `species_id`.  If
+you can't remember how to do this, check back on the [Datacamp
+tutorial](https://campus.datacamp.com/courses/statistical-inference-and-data-analysis).
+
+Your box plot will have the different species on the x-axis, and the weights on
+the y-axis.
+
+```{r}
+#- Show a box plot of "weight" as a function of "species_id"
+#- 8 marks / 100 (total 26 so far)
+...
+```
+
+As we suspected, there is a big difference in species weights.  If your plot is
+right, you should see that the species `DS` is much heavier than the other
+rodents, on average.  This is *Dipodomys spectabilis*: the very same
+[banner-tailed kangaroo
+rat](https://en.wikipedia.org/wiki/Banner-tailed_kangaroo_rat) that we saw
+excluded measurement plots.
+
+At once this makes us wonder if the `DS` species was effectively excluded from
+the `plot_type`s that were meant to exclude "Krats".  We will come back to that
+question later.
+
+## Narrowing the focus
+
+It does not seem very useful for us to look at the weight for all rodents pooled
+together, so we will restrict our attention to species `PB`. `PB` is Chaetodipus
+Baileyi - [Bailey's pocket
+mouse](https://en.wikipedia.org/wiki/Bailey's_pocket_mouse).
+
+Do do this, use the `subset` command to make a new data frame that only includes
+the `PB` rodents. Check back at the tutorial for examples of how to select a
+subset of a data frame that have a particular value in a column.
+
+*Hint*: For your subset, you will have to compare the column values to some
+text. For example, here are two comparisons of one bit of text against another:
+
+```{r}
+"PB" == "PB"
+```
+
+```{r}
+"DS" == "PB"
+```
+
+```{r}
+#- Use the "subset" function to make a new data frame called "pb_only" that
+#- contains only the animals with "species_id" of "PB".
+#- 8 marks / 100 (total 34 so far).
+pb_only <- ...
+# Display the first six rows of the new "pb_only" data frame.
+head(pb_only)
+```
+
+Show the histogram of the weights from the new `pb_only` data frame.
+
+```{r}
+#- Plot a histogram of the "weight" column of "pb_only"
+#- 4 marks / 100 (total 38 so far).
+...
+```
+
+These weights should look a lot closer to a normal distribution than your
+original histogram of weights from the rodents of all species combined.
+
+Another factor that might affect weight is sex.
+
+Display a table of the counts for the different values of `sex` in the `pb_only`
+data frame:
+
+```{r}
+#- Display a table of the counts for each value of "sex" in "pb_only"
+#- 4 marks / 100 (total 42 so far).
+...
+```
+
+Show a box plot of the weights of the PB animals, as a function of sex:
+
+```{r}
+#- Show a box plot of "weight" as a function of "sex" for the PB animals.
+#- 4 marks / 100 (total 46 so far)
+...
+```
+
+Your plot should show that female PB rodents weigh less on average than male PB
+rodents.
+
+In order to take this effect into account, one simple thing we can do is to use
+`subset` again to make a new data frame that only has the female PB rodents.
+
+```{r}
+#- Make a new data frame called "pb_female" that contains only the female
+#- animals from the "pb_only" data frame.
+#- 8 marks / 100 (total 54 so far).
+pb_female <- ...
+# Display the first six rows of the new "pb_female" data frame.
+head(pb_female)
+```
+
+Next we consider our question of interest, above, which is whether the different
+type of plots in which the researchers measured the animals had an effect on
+their weight.
+
+The plot types are given in the `plot_type` column of the data frame.
+
+First show a table of the counts for each value in the `plot_type` column of the
+`pb_female` data frame:
+
+```{r}
+#- Display a table of the counts for each value of "plot_type" in "pb_female"
+#- 3 marks / 100 (total 57 so far).
+...
+```
+
+Do a box plot of `weight` as a function of `plot_type`, for the female PB
+rodents.
+
+```{r}
+#- Show a box plot of "weight" as a function of "plot_type" for the female PB
+#- animals.
+#- 4 marks / 100 (total 61 so far)
+...
+```
+
+At first blush, there does not seem to be a convincing relationship between
+nutrition, as measured by weight, and the plot types.
+
+One explanation for this unconvincing boxplot result is that plot types do not
+influence nutrition of PB rats.
+
+Another possibility is that the `weight` value is not a very good indicator of
+nutrition.  Maybe we need to take the size of the animals into account, when
+looking at their weight.   Well nourished animals may be heavy for their size.
+
+The `hindfoot_length` column is one index of animal size.  We could try taking
+this into account.
+
+Start by looking at the relationship between `hindfoot_length` and `weight`.
+
+Do a plot of `hindfoot_length` (on the x-axis) against `weight` (on the y-axis),
+for the female PB rodents.
+
+```{r}
+#- Do a plot of "hindfoot_length" on the x axis against weight on the y axis,
+#- for the female PB rodents.
+#- 4 marks / 100 (total 65 so far)
+...
+```
+
+We are going to try using `hindfoot_length` in a similar way to the use of
+height in the well-known [body-mass
+index](https://en.wikipedia.org/wiki/Body_mass_index).
+
+Make a new variable `rmi` - for Rodent Mass Index.  It will be the rodent weight
+divided by the square of the rodent hindfoot length.
+
+```{r}
+#- Create a new variable "rmi" that has the "weight" values from the
+#- "pb_female" data frame, divided by the squared "hindfoot_length" values.
+#- 8 marks / 100 (total 73 so far)
+rmi <- ...
+# Show the first six values
+head(rmi)
+```
+
+Show a histogram of the `rmi` values:
+
+```{r}
+#- Show a histogram of the values in `rmi`
+#- 2 marks / 100 (total 75 so far)
+...
+```
+
+Is this new `rmi` variable a better predictor of nutrition?  It's difficult to
+know.  But we can ask whether it varies across the `plot_type`s more than the
+raw `weight`.
+
+Do a box plot of the `rmi` variable values as a function of the `plot_type`
+values for the female PB rodents.
+
+```{r}
+#- Do a box plot of the "rmi" values as a function of the PB female plot
+#- types.
+#- 2 marks / 100 (total 77 so far)
+...
+```
+
+Oops.  The relationship of `rmi` to `plot_type` still does not look completely
+convincing.
+
+Nevertheless, let us put the `rmi` values into the `pb_female` data frame, for
+future reference.
+
+```{r}
+# Run this chunk
+# Insert the "rmi" variable as a column in "pb_female".
+pb_female$rmi <- rmi
+# Show the first six rows
+head(pb_female)
+```
+
+## More about the plot types
+
+Thinking further, perhaps we have not got to the right data to answer our
+question.  We are interested in the different plot types - but let us think
+further about what we are interested in, exactly. For example, perhaps the key
+thing for PB rat nutrition is the exclusion of the much larger DS rats.
+Remember the DS rats are banner-tailed kangaroo rats, or "Krats" for short.
+
+But - did the Krat exclosure plot types really exclude Krats?
+
+To investigate this, we can look at the cross-tabulation of `species_id` with
+the `plot_type` in which each rat was measured.  If the Krat exclosure plots
+really excluded Krats, then we would expect there to be very few Krats measured
+in the Krat exclosure types.  For this question, we need to return to the full
+`surveys` data frame.
+
+*Hint* - be careful to use to the `surveys` data frame, and not the `pb_female`
+data frame you have been using for the last few chunks.
+
+*Hint* - the rows of the table should refer to the plot types, and the columns
+should refer to the species IDS.
+
+```{r}
+#- Create a "plot_type" by "species_id" table, store as "ptype_by_species"
+#- 3 marks / 100 (total 80 so far)
+ptype_by_species <- ...
+# Show the table
+ptype_by_species
+```
+
+The table suggests that "Long-term Krat Exclosure"s do a reasonable, but
+imperfect job of excluding Krats, but it would be easier to look at this table
+as percentages.  In particular, we would like to the percentage of Krats in each
+plot type.  In the next chunk, calculate and show this percentage table.
+
+*Hint 1*: investigate the `prop.table` function.  Have a look at the arguments
+that you can send to this function.  Here you want the proportions / percents
+within each row.
+
+*Hint 2*: notice I've asked for your table in *percent* values (out of 100), not
+*proportions* (out of 1).  You will probably find it easiest to calculate
+proportions first, and then convert to percents.
+
+```{r}
+#- Calculate a table giving the percentage of Krats (species DM), and all the
+#- other species, in each plot type.  The values should sum to 100 across each
+#- row of your table.
+#- Store your table as "ptype_by_species_pct".
+#- 7 marks / 100 (total 87 so far)
+ptype_by_species_pct <- ...
+# Show the percent table
+ptype_by_species_pct
+```
+
+Looking at the percent table, it seems that "Long-term Krat Exclosure" was the
+only plot type that did a reasonable job of greatly reducing the percentage of
+Krats.
+
+Given that we are interested in the nutrition of PB rats in the absence of
+Krats, we can restrict our analysis of female PB rat weights to the "Control"
+and "Long-term Krat Exclosure" plot types.
+
+Make a new data frame called `pb_female_ctl_krat` that has the rows from
+`pb_female` for which the `plot_type` is *either* "Control" *or* "Long-term Krat
+Exclosure".  Go back to the [Datacamp
+tutorial](https://campus.datacamp.com/courses/statistical-inference-and-data-analysis)
+for a reminder of how to do this kind of subsetting.
+
+```{r}
+#- Make new data frame called "pb_female_ctl_krat" that has the rows from
+#- "pb_female" for which "plot_type" is "Control" or "Long-term Krat
+#- Exclosure".
+#- 5 marks / 100 (total 92 so far)
+...
+pb_female_ctl_krat <- ...
+# Show the first six rows.
+head(pb_female_ctl_krat)
+```
+
+To confirm that you have only have plot types "Control" and "Long-term Krat
+Exclosure" in your new data frame, and to remind yourself of what the
+differences in `rmi` values were, do a boxplot of the `rmi` values of the
+`pb_female_ctl_krat` data frame, as a function of the plot type.
+
+*Hint* - if you have written the chunk above correctly your box plot below
+should have two boxes, one for each of the two remaining plot types.  If you
+don't have two boxes, go back and check the chunk above.
+
+```{r}
+#- Boxplot of "rmi" values from "pb_female_ctl_krat" as a function of
+#- "plot_type"
+#- 1 marks / 100 (total 93 so far)
+...
+```
+
+The next question is designed to get you to do some independent work searching
+the web and the documentation, to discover how to do something in R.
+
+You have heard that R is an environment for statistics, and we now do our first
+statistical test in R.
+
+We want to do a t-test comparing the `rmi` values for the "Control" plot type
+to the `rmi` values for the "Long-term Krat Exclosure" plot type.
+
+In order to do this, use the `t.test` function in R. Investigate this function
+in the RStudio help and online.  I suggest you use the "formula" method of
+telling `t.test` what to look at.  In particular, you could ask `t.test` to show
+you a t-test result for the `rmi` values from `pb_female_ctl_krat` *as a
+function of* the `plot_type` from the same data frame.  You have probably
+already been using this "formula" method for your boxplots.
+
+When you have got this working correctly you should see output text starting
+"Welch Two Sample t-test", and various results, including a t value of around
+-3.7.
+
+```{r}
+#- Show the results of doing a t-test on the "rmi" values of
+#- "pb_female_ctl_krat" as a function of the "plot_type" values from the same
+#- data frame.
+#- 7 marks / 100 (total 100 so far)
+...
+```
+
+## The end
+
+That's it.  Before you submit:
+
+* Remember that you should submit the `.Rmd` file, not the `.nb.html` file,
+  nor any of the other files that the R notebook makes.  Make sure your
+  notebook file does have the extension `.Rmd`.
+* Before you submit this notebook for marking, make sure that all the chunks
+  execute correctly.  To do that, go to the Run button at the top of the
+  notebook, and click "Restart R and Clear Output".  Then go to the top of the
+  notebook, and run each chunk in turn, to make sure that they run without
+  error, and give you the output you expect.  *Remember, we're going to run an
+  automated marking script over this file, so it has to execute correctly, for
+  you to get the marks*.
